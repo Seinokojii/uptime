@@ -1,0 +1,27 @@
+# Внешняя проверка сайтов каждые 10 минут. Упал сайт → проверка «красная» → GitHub присылает письмо владельцу репозитория.
+name: Сайты работают?
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write            # только для еженедельной отметки «репозиторий жив» (иначе GitHub выключает расписание через 60 дней тишины)
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Баатыр · Rayana — baatyr-rayana.com
+        run: curl -fsS --retry 3 --retry-delay 20 --retry-all-errors --max-time 20 -o /dev/null -w "%{http_code} за %{time_total}s\n" https://baatyr-rayana.com/health
+      - name: Манты №1 — бот и мини-приложение
+        if: always()
+        run: curl -fsS --retry 3 --retry-delay 20 --retry-all-errors --max-time 20 -o /dev/null -w "%{http_code} за %{time_total}s\n" https://62-113-109-193.sslip.io/
+  keepalive:
+    if: github.event.schedule == '*/10 * * * *' && github.run_number % 1000 == 0
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          date -u +%F > last-alive.txt
+          git config user.name "uptime-bot"; git config user.email "uptime-bot@users.noreply.github.com"
+          git add last-alive.txt && git commit -m "keepalive" && git push || true
