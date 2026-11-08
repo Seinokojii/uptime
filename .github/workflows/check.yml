@@ -17,7 +17,7 @@ jobs:
         run: curl -fsS --retry 3 --retry-delay 20 --retry-all-errors --max-time 20 -o /dev/null -w "%{http_code} за %{time_total}s\n" https://baatyr-rayana.com/health
       - name: Манты №1 — бот и мини-приложение
         if: always()
-        run: curl -fsS --retry 3 --retry-delay 20 --retry-all-errors --max-time 20 -o /dev/null -w "%{http_code} за %{time_total}s\n" https://62-113-109-193.sslip.io/
+        run: curl -fsS --retry 3 --retry-delay 20 --retry-all-errors --max-time 20 -o /dev/null -w "%{http_code} за %{time_total}s\n" https://172-236-200-171.sslip.io/
   keepalive:
     if: github.event.schedule == '0 3 * * 1'
     runs-on: ubuntu-latest
